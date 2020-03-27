@@ -10,12 +10,14 @@ class polynomial
     term* last_;
     public:
         polynomial();
+        polynomial(int);
         polynomial(int, float[]);
+        polynomial(polynomial&);
         void Insert(unsigned int, float);
         float Calculate(float);
         ~polynomial();
-        int GetDegree(polynomial) const;
-        polynomial operator+(polynomial&);
+        int GetDegree() const;
+        polynomial& operator+(polynomial&);
         float& operator[](const int);
 };
 
