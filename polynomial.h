@@ -12,13 +12,15 @@ class polynomial
         polynomial();
         polynomial(int);
         polynomial(int, float[]);
-        polynomial(polynomial&);
+        polynomial(const polynomial&);
         void Insert(unsigned int, float);
         float Calculate(float);
         ~polynomial();
         int GetDegree() const;
-        polynomial& operator+(polynomial&);
+        polynomial operator+(const polynomial&);
         float& operator[](const int);
+        const float& operator[](const int) const;
+        polynomial& operator=(const polynomial&);
 };
 
 #endif // POLYNOMIAL_H

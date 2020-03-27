@@ -21,7 +21,7 @@ polynomial::polynomial(int degree, float coefValues[]) : polynomial(){
         Insert(index, coefValues[index]);
 }
 
-polynomial::polynomial(polynomial& copyPoly) : polynomial(){
+polynomial::polynomial(const polynomial& copyPoly) : polynomial(){
     for(int index=0; index<=copyPoly.degree_; ++index)
         Insert(index, copyPoly[index]);
 }
@@ -53,7 +53,7 @@ float polynomial::Calculate(float value){
     return finalSum;
 }
 
-polynomial& polynomial::operator+(polynomial& polyObj){
+polynomial polynomial::operator+(const polynomial& polyObj){
     polynomial returnPoly(std::max(degree_, polyObj.degree_));
     int index = 0;
     int minimumDegree = std::min(degree_, polyObj.degree_);
@@ -71,6 +71,25 @@ float& polynomial::operator[](const int index){
     for(int i=0; i<index; i++)
         aux = aux->next_;
     return aux->coefficient_;
+}
+
+const float& polynomial::operator[](const int index) const{
+    term *aux = first_;
+    for(int i=0; i<index; i++)
+        aux = aux->next_;
+    return aux->coefficient_;
+}
+
+polynomial& polynomial::operator=(const polynomial& polyObj){
+    if(&polyObj != this){
+        if(polyObj.degree_ == degree_)
+            for(int index=0; index<=degree_; ++index)
+                this->operator[](index) = polyObj[index];
+        else if(degree_ == -1)
+            for(int index=0; index<=polyObj.degree_; ++index)
+                Insert(index, polyObj[index]);
+    }
+    return *this;
 }
 
 polynomial::~polynomial(){
