@@ -1,1 +1,2 @@
-# Tema1POO-Polinoame
+# Tema Nr. 1 POO
+# Polinoame
