@@ -23,6 +23,9 @@ int main()
     cout<<p6<<endl;
     p6 = p6*2;
     cout<<p6;*/
-    cout<<p3;
+    polynomial p4 = p2;
+    p4[2] = -3;
+    p4 = p4+p2;
+    cout<<p4[2];
     return 0;
 }

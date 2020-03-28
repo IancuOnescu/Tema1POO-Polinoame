@@ -55,15 +55,24 @@ float polynomial::Calculate(float value) const{
 }
 
 polynomial polynomial::operator+(const polynomial& polyObj) const{
-    polynomial returnPoly(std::max(degree_, polyObj.degree_));
+    int maxDegree = std::max(degree_, polyObj.degree_);
+    if(degree_ == polyObj.degree_)
+        while(this->operator[](maxDegree) == -polyObj[maxDegree])
+            --maxDegree;
+    polynomial returnPoly(maxDegree);
     int index = 0;
-    int minimumDegree = std::min(degree_, polyObj.degree_);
-    while(index <= minimumDegree)
-        returnPoly[index]=this->operator[](index)+polyObj[index++];
-    while(index <= degree_)
-        returnPoly[index]=this->operator[](index++);
-    while(index <= polyObj.degree_)
-        returnPoly[index]=polyObj[index++];
+    int minDegree = std::min(degree_, polyObj.degree_);
+    if(minDegree > maxDegree)
+        while(index <= maxDegree)
+            returnPoly[index]=this->operator[](index)+polyObj[index++];
+    else{
+        while(index <= minDegree)
+            returnPoly[index]=this->operator[](index)+polyObj[index++];
+        while(index <= degree_)
+            returnPoly[index]=this->operator[](index++);
+        while(index <= polyObj.degree_)
+            returnPoly[index]=polyObj[index++];
+    }
     return returnPoly;
 }
 
