@@ -21,6 +21,7 @@ class polynomial
         polynomial operator*(const polynomial&) const;
         friend polynomial operator*(const float, const polynomial&);
         friend polynomial operator*(const polynomial&, const float);
+        polynomial operator/(const polynomial&);
         float& operator[](const int);
         const float& operator[](const int) const;
         polynomial& operator=(const polynomial&);

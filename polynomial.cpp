@@ -95,6 +95,27 @@ polynomial operator*(const polynomial& polyObj, const float multValue){
     return multValue * polyObj;
 }
 
+polynomial polynomial::operator/(const polynomial& polyDivisor){
+    try{
+        if(polyDivisor.degree_<0 || polyDivisor.degree_>degree_)
+            throw std::out_of_range("incorrectDivisor");
+    }catch(std::out_of_range){
+        std::cout<<"Out of range Divisor";
+    }
+    int quotientCurrentTermDegree = degree_ - polyDivisor.degree_;
+    float quotientCurrentTermCoefficient;
+    polynomial dividentAtEachStep = *this;
+    polynomial quotientPolynomial(quotientCurrentTermDegree);
+    while(dividentAtEachStep.degree_ >= degree_){
+        quotientCurrentTermDegree = dividentAtEachStep.degree_-polyDivisor.degree_;
+        quotientCurrentTermCoefficient = dividentAtEachStep[dividentAtEachStep.degree_] / polyDivisor[polyDivisor.degree_];
+        quotientPolynomial[quotientCurrentTermDegree] = quotientCurrentTermCoefficient;
+        dividentAtEachStep = dividentAtEachStep + polyDivisor * (-quotientCurrentTermCoefficient);
+    }
+    ///Reminder is left in dividentAtEachStep -> for future use
+    return quotientPolynomial;
+}
+
 float& polynomial::operator[](const int index){
     try{
         if(index > degree_ || index < 0)
