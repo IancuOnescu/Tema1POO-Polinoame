@@ -26,6 +26,7 @@ int main()
     polynomial p4 = p2;
     p4[2] = -3;
     p4 = p4+p2;
+    cout<<p1<<endl;
     cout<<p4<<endl;
     p4 = p1 / p4;
     cout<<p4;

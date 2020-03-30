@@ -47,7 +47,7 @@ float polynomial::Calculate(float value) const{
     float finalSum = 0;
     for(term *aux = first_; aux; aux=aux->next_){
         float valueToExp = 1;
-        for(int index = 1; index <= aux->exponent_; ++index)
+        for(unsigned int index = 1; index <= aux->exponent_; ++index)
             valueToExp *= value;
         finalSum += (valueToExp * aux->coefficient_);
     }
@@ -95,7 +95,7 @@ polynomial operator*(const polynomial& polyObj, const float multValue){
     return multValue * polyObj;
 }
 
-polynomial polynomial::operator/(const polynomial& polyDivisor){
+polynomial polynomial::operator/(const polynomial& polyDivisor) const{
     try{
         if(polyDivisor.degree_<0 || polyDivisor.degree_>degree_)
             throw std::out_of_range("incorrectDivisor");
@@ -106,11 +106,14 @@ polynomial polynomial::operator/(const polynomial& polyDivisor){
     float quotientCurrentTermCoefficient;
     polynomial dividentAtEachStep = *this;
     polynomial quotientPolynomial(quotientCurrentTermDegree);
-    while(dividentAtEachStep.degree_ >= degree_){
+    polynomial* substractAtEachStep;
+    while(dividentAtEachStep.degree_ >= polyDivisor.degree_){
         quotientCurrentTermDegree = dividentAtEachStep.degree_-polyDivisor.degree_;
         quotientCurrentTermCoefficient = dividentAtEachStep[dividentAtEachStep.degree_] / polyDivisor[polyDivisor.degree_];
         quotientPolynomial[quotientCurrentTermDegree] = quotientCurrentTermCoefficient;
-        dividentAtEachStep = dividentAtEachStep + polyDivisor * (-quotientCurrentTermCoefficient);
+        substractAtEachStep = new polynomial(dividentAtEachStep.degree_);
+        substractAtEachStep->operator[](dividentAtEachStep.degree_)= -dividentAtEachStep[dividentAtEachStep.degree_];
+        dividentAtEachStep = dividentAtEachStep + *substractAtEachStep;
     }
     ///Reminder is left in dividentAtEachStep -> for future use
     return quotientPolynomial;
@@ -131,6 +134,13 @@ float& polynomial::operator[](const int index){
 }
 
 const float& polynomial::operator[](const int index) const{
+    try{
+        if(index > degree_ || index < 0)
+            throw std::out_of_range("indexError");
+    }catch(std::out_of_range){
+        std::cout<<"Polynomial index out of bounds\nTerminating...";
+        exit(0);
+    }
     term *aux = first_;
     for(int i=0; i<index; i++)
         aux = aux->next_;
@@ -147,8 +157,10 @@ polynomial& polynomial::operator=(const polynomial& polyObj){
                 Insert(index, polyObj[index]);
         else if(polyObj.degree_ < degree_){
             term *auxForDelete1  = first_;
-            for(int index=0; index<=polyObj.degree_; ++index)
+            for(int index=0; index<polyObj.degree_; ++index)
                 auxForDelete1 = auxForDelete1->next_;
+            last_ = auxForDelete1;
+            auxForDelete1 = auxForDelete1->next_;
             term *auxForDelete2 = auxForDelete1;
             while(auxForDelete1 != NULL){
                 auxForDelete2 = auxForDelete1->next_;
@@ -165,21 +177,24 @@ polynomial& polynomial::operator=(const polynomial& polyObj){
 }
 
 std::ostream& operator<<(std::ostream& output, const polynomial& polyObj){
-    for(int index=polyObj.degree_; index>1; index--)
-        if(polyObj[index] != 0){
-            if(polyObj[index] != 1)
-                output<<polyObj[index];
-            output<<"X^"<<index<<" + ";
-        }
-    if(polyObj[1] != 0){
-            if(polyObj[1] != 1)
-                output<<polyObj[1];
-            output<<"X"<<" + ";
+    std::string outPlus = "";
+    if(polyObj.degree_ >= 0){
+        for(int index=polyObj.degree_; index>=0; index--)
+            if(polyObj[index] != 0){
+                if(polyObj[index] > 0)
+                    output << outPlus;
+                if(polyObj[index] == -1)
+                    output << "-";
+                if(polyObj[index] != 1 && polyObj[index] != -1)
+                    output <<polyObj[index];
+                if(index > 0)
+                    output<<"X";
+                if(index > 1)
+                    output << "^" <<index;
+                outPlus = " + ";
+            }
+        output<<" = 0";
     }
-    if(polyObj[0]){
-        output<<polyObj[0];
-    }
-    output<<" = 0";
     return output;
 }
 
@@ -198,8 +213,8 @@ polynomial::~polynomial(){
     if(first_ != NULL){
         term* aux1 = first_;
         term* aux2;
-        while(aux1 != NULL){
-            aux2 = aux1->next_;
+        for(int index=0; index<=degree_; ++index){
+            aux2 = aux1 -> next_;
             delete aux1;
             aux1 = aux2;
         }
