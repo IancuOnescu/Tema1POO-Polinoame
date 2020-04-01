@@ -39,6 +39,20 @@ void polynomial::Insert(unsigned int exponent, float coefValue){
     ++degree_;
 }
 
+void polynomial::Clear(){
+        if(first_ != NULL){
+        term* aux1 = first_;
+        term* aux2;
+        for(int index=0; index<=degree_; ++index){
+            aux2 = aux1 -> next_;
+            delete aux1;
+            aux1 = aux2;
+        }
+        first_ = last_ = NULL;
+        degree_ = -1;
+    }
+}
+
 int polynomial::GetDegree() const{
     return degree_;
 }
@@ -149,28 +163,9 @@ const float& polynomial::operator[](const int index) const{
 
 polynomial& polynomial::operator=(const polynomial& polyObj){
     if(&polyObj != this){
-        int minDegree = std::min(degree_, polyObj.degree_);
-        for(int index=0; index<=minDegree; ++index)
-            this->operator[](index) = polyObj[index];
-        if(polyObj.degree_ > degree_)
-            for(int index = minDegree+1; index<=polyObj.degree_; ++index)
-                Insert(index, polyObj[index]);
-        else if(polyObj.degree_ < degree_){
-            term *auxForDelete1  = first_;
-            for(int index=0; index<polyObj.degree_; ++index)
-                auxForDelete1 = auxForDelete1->next_;
-            last_ = auxForDelete1;
-            auxForDelete1 = auxForDelete1->next_;
-            term *auxForDelete2 = auxForDelete1;
-            while(auxForDelete1 != NULL){
-                auxForDelete2 = auxForDelete1->next_;
-                delete auxForDelete1;
-                auxForDelete1 = auxForDelete2;
-            }
-        }
-        else if(degree_ == -1)
-            for(int index=0; index<=polyObj.degree_; ++index)
-                Insert(index, polyObj[index]);
+        this->Clear();
+        for(int index=0; index<=polyObj.degree_; ++index)
+            Insert(index, polyObj[index]);
     }
     degree_ = polyObj.degree_;
     return *this;
@@ -185,7 +180,7 @@ std::ostream& operator<<(std::ostream& output, const polynomial& polyObj){
                     output << outPlus;
                 if(polyObj[index] == -1)
                     output << "-";
-                if(polyObj[index] != 1 && polyObj[index] != -1)
+                if(polyObj[index] != 1 && polyObj[index] != -1 || index==0)
                     output <<polyObj[index];
                 if(index > 0)
                     output<<"X";
@@ -199,6 +194,7 @@ std::ostream& operator<<(std::ostream& output, const polynomial& polyObj){
 }
 
 std::istream& operator>>(std::istream& input, polynomial& polyObj){
+    polyObj.Clear();
     int polySize;
     float coefficient;
     input >> polySize;
@@ -210,13 +206,5 @@ std::istream& operator>>(std::istream& input, polynomial& polyObj){
 }
 
 polynomial::~polynomial(){
-    if(first_ != NULL){
-        term* aux1 = first_;
-        term* aux2;
-        for(int index=0; index<=degree_; ++index){
-            aux2 = aux1 -> next_;
-            delete aux1;
-            aux1 = aux2;
-        }
-    }
+    Clear();
 }

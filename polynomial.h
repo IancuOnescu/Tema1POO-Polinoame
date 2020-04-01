@@ -15,6 +15,7 @@ class polynomial
         polynomial(const polynomial&);
         ~polynomial();
         void Insert(unsigned int, float);
+        void Clear();
         float Calculate(float) const;
         int GetDegree() const;
         polynomial operator+(const polynomial&) const;
